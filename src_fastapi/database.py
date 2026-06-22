@@ -22,8 +22,9 @@ class TestPair(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     subtask_id: Mapped[int] = mapped_column(ForeignKey("subtasks.id"), primary_key=True, nullable=False)
     
-    input: Mapped[str] = mapped_column()
-    output: Mapped[str] = mapped_column()
+    installed: Mapped[bool] = mapped_column(nullable=False)
+    input: Mapped[str] = mapped_column(nullable=True)
+    output: Mapped[str] = mapped_column(nullable=True)
     
     subtask: Mapped["SubTask"] = relationship(back_populates="subtasks")
 
@@ -42,8 +43,8 @@ class Problem(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(index=True, nullable=False)
-    year: Mapped[int] = mapped_column()
-    phase: Mapped[int] = mapped_column()
-    level: Mapped[int] = mapped_column()
+    year: Mapped[str] = mapped_column()
+    phase: Mapped[str] = mapped_column()
+    level: Mapped[str] = mapped_column()
     
     subtasks: Mapped[List["SubTask"]] = relationship(back_populates="problem")
