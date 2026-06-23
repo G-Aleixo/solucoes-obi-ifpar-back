@@ -1,3 +1,4 @@
+from os import makedirs
 from typing import Annotated, List
 
 from fastapi import Depends, FastAPI, HTTPException, Query
@@ -5,12 +6,13 @@ from sqlalchemy import create_engine, Column, ForeignKey
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, sessionmaker, mapped_column, relationship
 
 sqlite_file_name = "instance/database.db"
+makedirs("/".join(sqlite_file_name.split("/")[0:-1]), exist_ok=True)
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 
 connect_args = {"check_same_thread": False}
 engine = create_engine(sqlite_url, connect_args=connect_args)
 
-Session = sessionmaker(bind=engine)
+SessionLocal = sessionmaker(bind=engine)
 
 class Base(DeclarativeBase):
     ...
@@ -48,3 +50,20 @@ class Problem(Base):
     level: Mapped[str] = mapped_column()
     
     subtasks: Mapped[List["SubTask"]] = relationship(back_populates="problem")
+
+class Admin(Base):
+    __tablename__ = "admins"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(index=True, nullable=False)
+    
+    hashed_password: Mapped[str] = mapped_column(nullable=False)
+
+def get_session():
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
+
+SessionDep = Annotated[Session, Depends(get_session)]

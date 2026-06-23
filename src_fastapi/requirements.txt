@@ -1,5 +1,6 @@
-"fastapi[standard]"
+fastapi[standard]
 sqlalchemy
 pydantic
-"python-jose[cryptography]"
+python-jose[cryptography]
 python-dotenv
+pwdlib[argon2]
